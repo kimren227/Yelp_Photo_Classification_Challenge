@@ -1,6 +1,6 @@
 from keras.models import Model
 from keras.layers import Input, merge, ZeroPadding2D
-from keras.layers.core import Dense, Dropout, Activation
+from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import AveragePooling2D, GlobalAveragePooling2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
@@ -65,24 +65,14 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
     x = Scale(axis=concat_axis, name='conv'+str(final_stage)+'_blk_scale')(x)
     x = Activation('relu', name='relu'+str(final_stage)+'_blk')(x)
     x = GlobalAveragePooling2D(name='pool'+str(final_stage))(x)
-
     x = Dense(classes, name='fc6')(x)
     x = Activation('softmax', name='prob')(x)
 
-    x = Dense(200, name='fc7', kernel_initializer='random_normal')(x)
-    x = Activation('relu', name='relu_mine_2')(x)
-
-    x = Dense(100, name='fc8', kernel_initializer='random_normal')(x)
-    x = Activation('relu', name='relu_mine_3')(x)
-
-    x = Dense(9, name='fc9', kernel_initializer='random_normal')(x)
-    x = Activation('relu', name='relu_mine_4')(x)
     model = Model(img_input, x, name='densenet')
 
     if weights_path is not None:
       model.load_weights(weights_path)
-    for layer in model.layers[:-2]:
-        layer.trainable=False
+
     return model
 
 
@@ -178,5 +168,3 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
 
     return concat_feat, nb_filter
 
-#dense_net = DenseNet(weights_path="/home/rendaxuan/Documents/workspace/DenseNet-Keras/imagenet_models/densenet121_weights_tf.h5")
-model = DenseNet(reduction=0.5, classes = 1000, weights_path="/home/rendaxuan/Documents/workspace/DenseNet-Keras/imagenet_models/densenet121_weights_tf.h5")

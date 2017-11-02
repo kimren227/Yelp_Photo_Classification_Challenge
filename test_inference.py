@@ -33,6 +33,7 @@ im = np.expand_dims(im, axis=0)
 
 # Test pretrained model
 model = DenseNet(reduction=0.5, classes=1000, weights_path=weights_path)
+print(model.layers[-1].output_shape)
 
 sgd = SGD(lr=1e-2, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
